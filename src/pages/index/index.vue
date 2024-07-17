@@ -24,9 +24,8 @@ export default {
   },
   onReady() {
     this.tonConnectUI = new TonConnectUI({
-      // manifestUrl: 'https://ton-connect.github.io/demo-dapp-with-react-ui/tonconnect-manifest.json',
+      manifestUrl: 'https://ton-connect.github.io/demo-dapp-with-react-ui/tonconnect-manifest.json',
       // manifestUrl: 'https://tma.charsoft.tech/static/tonconnect-manifest.json',
-      manifestUrl: 'https://p.townstory.io/tonconnect-manifest.json',
       buttonRootId: 'ton-connect'
     });
   },
