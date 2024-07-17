@@ -2795,6 +2795,11 @@ entities@^4.5.0:
   resolved "https://registry.npmmirror.com/entities/-/entities-4.5.0.tgz#5d268ea5e7113ec74c4d033b79ea5a35a488fb48"
   integrity sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==
 
+eruda@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.npmmirror.com/eruda/-/eruda-3.2.0.tgz#233c6aa4d7ca617d6481a6079753324574ca084c"
+  integrity sha512-+Cysj3jfEU9kh1Bk6dGRhHrLgzlyBHEed7mkGvMOnSrD9UWCquplwGDWl4wVq/LGDHDkd8p5Wexph+i55I5XFg==
+
 es-define-property@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmmirror.com/es-define-property/-/es-define-property-1.0.0.tgz#c7faefbdff8b2696cf5f46921edfb77cc4ba3845"

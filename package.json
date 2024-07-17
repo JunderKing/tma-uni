@@ -55,6 +55,7 @@
     "@dcloudio/uni-mp-xhs": "3.0.0-4010520240507001",
     "@dcloudio/uni-quickapp-webview": "3.0.0-4010520240507001",
     "@tonconnect/ui": "^2.0.6",
+    "eruda": "^3.2.0",
     "vue": "^3.4.21",
     "vue-i18n": "^9.1.9"
   },
