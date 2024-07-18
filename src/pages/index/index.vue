@@ -47,7 +47,8 @@ export default {
       // botToken: '7017202559:AAFIdFaZQAprDnPFlbXvs0UW9STqJA5GAPU',
       botToken: '7293950505:AAExuq1OFmJsUQ2tM8gi18BArrqWjhtNBsI',
       tgApiUrl: 'https://api.telegram.org',
-      tonWallet: '0:d201e07dc8faa18148fcfcbc37699749527e82488e3e9a2ea39bb92eb6e849b0',
+      // tonWallet: '0:d201e07dc8faa18148fcfcbc37699749527e82488e3e9a2ea39bb92eb6e849b0',
+      tonWallet: 'UQDSAeB9yPqhgUj8_Lw3aZdJUn6CSI4-mi6jm7kutuhJsF2J',
       tonConnectUI: null,
       webApp: null,
       userData: {
@@ -66,15 +67,13 @@ export default {
     }
   },
   onReady() {
-    // this.tonAddress("2ecdedb7083f47209b0381daaf5aac7364505879352a07683c64bbdd2cb57b07")
-    // this.tonAddress("0:6f7d9e599f9797b5b3907ecdfc41568ac34f33ddfcad62fa1b75c77afefcd8cb")
     this.initWallet()
   },
   methods: {
     async initWallet() {
       this.tonConnectUI = new TonConnectUI({
-        // manifestUrl: 'https://ton-connect.github.io/demo-dapp-with-react-ui/tonconnect-manifest.json',
-        manifestUrl: 'https://tma.charsoft.tech/static/tonconnect-manifest.json',
+        manifestUrl: 'https://ton-connect.github.io/demo-dapp-with-react-ui/tonconnect-manifest.json',
+        // manifestUrl: 'https://tma.charsoft.tech/static/tonconnect-manifest.json',
       });
       this.currentWallet = this.tonConnectUI.wallet;
       console.log('wallet', this.currentWallet)
@@ -101,9 +100,10 @@ export default {
 
     async payByWallet() {
       const transaction = {
+        validUntil: Math.floor(Date.now() / 1000) + 360,
         messages: [{
-          address: this.tonWallet, // 目标地址
-          amount: 10000000 // 以nanotons计的 0.1 Toncoin
+          address: this.tonWallet,
+          amount: 10000000,
         }]
       }
       const result = await this.tonConnectUI.sendTransaction(transaction)
