@@ -61,7 +61,7 @@ export default {
     this.webApp = window.window.Telegram.WebApp 
     console.log('initData', this.webApp.initData)
     if (this.webApp.initDataUnsafe) {
-      this.verifyInitData(this.webApp.initData)
+      // this.verifyInitData(this.webApp.initData)
       this.userData = this.webApp.initDataUnsafe.user
     }
   },
@@ -73,8 +73,8 @@ export default {
   methods: {
     async initWallet() {
       this.tonConnectUI = new TonConnectUI({
-        manifestUrl: 'https://ton-connect.github.io/demo-dapp-with-react-ui/tonconnect-manifest.json',
-        // manifestUrl: 'https://tma.charsoft.tech/static/tonconnect-manifest.json',
+        // manifestUrl: 'https://ton-connect.github.io/demo-dapp-with-react-ui/tonconnect-manifest.json',
+        manifestUrl: 'https://tma.charsoft.tech/static/tonconnect-manifest.json',
       });
       this.currentWallet = this.tonConnectUI.wallet;
       console.log('wallet', this.currentWallet)
@@ -103,7 +103,7 @@ export default {
       const transaction = {
         messages: [{
           address: this.tonWallet, // 目标地址
-          amount: "10000000" // 以nanotons计的 0.1 Toncoin
+          amount: 10000000 // 以nanotons计的 0.1 Toncoin
         }]
       }
       const result = await this.tonConnectUI.sendTransaction(transaction)
