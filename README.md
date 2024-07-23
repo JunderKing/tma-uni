@@ -48,11 +48,12 @@ const unsubscribe = this.tonConnectUI.onStatusChange(wallet => {
   this.currentWallet = wallet
 })
 ```
-5. 点击按钮，连接钱包
+5. 验证钱包地址(待补充)
+6. 点击按钮，连接钱包
 ```js
 const connectedWallet = await tonConnectUI.connectWallet();
 ```
-6. 点击支付按钮，使用TON支付
+7. 点击支付按钮，使用TON支付
 ```js
 const transaction = {
   validUntil: Math.floor(Date.now() / 1000) + 360, // 过期时间
@@ -63,6 +64,7 @@ const transaction = {
 }
 const result = await this.tonConnectUI.sendTransaction(transaction)
 ```
+8. 后端监控入账 (待补充)
 
 ## STAR支付
 1. 创建支付链接(通过服务端接口创建，tgToken不要放在客户端)
