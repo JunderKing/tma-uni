@@ -58,7 +58,8 @@ export default {
       currentWallet: null,
     }
   },
-  onLoad() {
+  onLoad(query) {
+    console.log('startapp', query.tgWebAppStartParam)
     this.webApp = window.window.Telegram.WebApp 
     console.log('initData', this.webApp.initData)
     if (this.webApp.initDataUnsafe) {
