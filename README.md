@@ -38,7 +38,7 @@ yarn add @tonconnect/ui
 3. 实例化UI对象
 ```js
 const tonConnectUI = new TonConnectUI({
-  manifestUrl: 'https://ton-connect.github.io/demo-dapp-with-react-ui/tonconnect-manifest.json',
+  manifestUrl: 'https://ton-connect.github.io/demo-dapp-with-react-ui/tonconnect-manifest.json', // 此处为上一步创建的json访问链接
 });
 ```
 4. 获取用户钱包信息，监听钱包变更
@@ -48,11 +48,11 @@ const unsubscribe = this.tonConnectUI.onStatusChange(wallet => {
   this.currentWallet = wallet
 })
 ```
-5. 点击连接钱包，唤起弹窗
+5. 点击按钮，连接钱包
 ```js
 const connectedWallet = await tonConnectUI.connectWallet();
 ```
-6. 使用TON支付
+6. 点击支付按钮，使用TON支付
 ```js
 const transaction = {
   validUntil: Math.floor(Date.now() / 1000) + 360, // 过期时间
