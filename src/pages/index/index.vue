@@ -32,7 +32,7 @@
     <view class="btn-region">
       <view class="btn btn-primary" @click="payByWallet" v-if="currentWallet">PayByWallet</view>
       <view class="btn btn-primary" @click="connect" v-else>Connect</view>
-      <view class="btn btn-secondary" @click="payByStar">PayByStars</view>
+      <view class="btn btn-secondary" @click="handleShare">Share</view>
     </view>
   </view>
 </template>
@@ -71,6 +71,13 @@ export default {
     this.initWallet()
   },
   methods: {
+    async handleShare() {
+      const content = "Join the fun at Telegram and win big prizes! Go play and receive exclusive bonuses. Don't miss out!"
+      const shareLink = 'https://t.me/KingDemoBot/AceTest?startapp=Telegram0000001195'
+      const tgShareUrl = 'https://t.me/share/url?url={link}&text={text}'
+      const url = tgShareUrl.replace('{text}', content).replace('{link}', shareLink)
+      window.open(url, "_blank")
+    },
     async initWallet() {
       this.tonConnectUI = new TonConnectUI({
         manifestUrl: 'https://ton-connect.github.io/demo-dapp-with-react-ui/tonconnect-manifest.json',
