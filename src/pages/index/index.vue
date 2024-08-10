@@ -73,7 +73,7 @@ export default {
   methods: {
     async handleShare() {
       const content = "Join the fun at Telegram and win big prizes! Go play and receive exclusive bonuses. Don't miss out!"
-      const shareLink = 'https://t.me/KingDemoBot/AceTest?startapp=Telegram0000001195'
+      const shareLink = 'https://t.me/KingV5Bot/TrueGame1?startapp=Telegram0000001195'
       const tgShareUrl = 'https://t.me/share/url?url={link}&text={text}'
       const url = tgShareUrl.replace('{text}', content).replace('{link}', shareLink)
       window.open(url, "_blank")
