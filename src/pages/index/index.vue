@@ -31,6 +31,7 @@
     </view>
     <view class="btn-region">
       <view class="btn btn-primary" @click="payByJetton" v-if="currentWallet">PayByUsdt</view>
+      <view class="btn btn-primary" @click="payByTon" v-if="currentWallet">PayByTon</view>
       <view class="btn btn-primary" @click="connect" v-else>Connect</view>
       <view class="btn btn-secondary" @click="handleShare">Share</view>
     </view>
