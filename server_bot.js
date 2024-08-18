@@ -1,18 +1,21 @@
-const { Bot } = require('grammy')
-
-// const bot = new Bot('7017202559:AAFIdFaZQAprDnPFlbXvs0UW9STqJA5GAPU');
-const bot = new Bot('7293950505:AAExuq1OFmJsUQ2tM8gi18BArrqWjhtNBsI');
-
+const { Bot, InlineKeyboard } = require('grammy')
 const paidUsers = new Map();
 
+// const bot = new Bot('7017202559:AAFIdFaZQAprDnPFlbXvs0UW9STqJA5GAPU');
+
+const keyboard = new InlineKeyboard()
+        .url('play', 'https://t.me/Tonacebot/tonace')
+        .url('share', 'https://t.me/share/url?url=https://t.me/Tonacebot/tonace?startapp=TONACE0000591513&text=Dive%20into%20TonAce%20for%20Massive%20Wins!%20Play%20now%20and%20claim%20your%20exclusive%20cash%20bonuses.%20The%20crypto%20jackpot%20awaits!')
+        .url('join', 'GROUP-LINK');
+
 // 开始
-bot.command("start", (ctx) =>
-  ctx.reply(`Welcome! I am a simple bot that can accept payments via Telegram Stars. The following commands are available:
-    /pay - to pay
-    /status - to check payment status
-    /refund - to refund payment`,
-  ),
-);
+bot.command('start', async (ctx) => {
+  // 发送图文消息
+  ctx.replyWithPhoto('BANNER-LINK', {
+    caption: `TEXT`,
+    reply_markup: keyboard
+  })
+});
 
 // 支付
 bot.command("pay", (ctx) => {

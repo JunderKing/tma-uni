@@ -62,6 +62,7 @@
     "buffer": "^6.0.3",
     "eruda": "^3.2.0",
     "grammy": "^1.27.0",
+    "tonweb": "^0.0.66",
     "vite-plugin-node-polyfills": "^0.22.0",
     "vue": "^3.4.21",
     "vue-i18n": "^9.1.9"

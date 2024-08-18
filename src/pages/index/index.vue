@@ -24,13 +24,9 @@
       <div class="btn-line">
         <div class="btn btn-primary" @click="disconnect">断开连接</div>
       </div>
-      <!-- <div class="form-line">
-        <view class="label">address</view>
-        <view class="value">{{hideStr(rawToBase64(currentWallet.account.address))}}</view>
-      </div> -->
     </view>
     <view class="btn-region">
-      <view class="btn btn-primary" @click="payByWallet" v-if="currentWallet">PayByWallet</view>
+      <view class="btn btn-primary" @click="payByJetton" v-if="currentWallet">PayByUsdt</view>
       <view class="btn btn-primary" @click="connect" v-else>Connect</view>
       <view class="btn btn-secondary" @click="handleShare">Share</view>
     </view>
@@ -39,16 +35,17 @@
 
 <script>
 import {TonConnectUI} from '@tonconnect/ui';
-// import { WalletContractV4 } from "@ton/ton";
+import { beginCell, toNano, address } from '@ton/ton'
+import TonWeb from "tonweb";
 
 export default {
   data() {
     return {
-      // botToken: '7017202559:AAFIdFaZQAprDnPFlbXvs0UW9STqJA5GAPU',
       botToken: '7293950505:AAExuq1OFmJsUQ2tM8gi18BArrqWjhtNBsI',
       tgApiUrl: 'https://api.telegram.org',
-      // tonWallet: '0:d201e07dc8faa18148fcfcbc37699749527e82488e3e9a2ea39bb92eb6e849b0',
-      tonWallet: 'UQDSAeB9yPqhgUj8_Lw3aZdJUn6CSI4-mi6jm7kutuhJsF2J',
+      dstAddr: 'UQAbm7uh59HHUlslW9PCru_ncNc6qAHi_7WmukvGiqk6HMTS',
+      usdtAddr: 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs',
+      usdtDecimal: 6,
       tonConnectUI: null,
       webApp: null,
       userData: {
@@ -60,10 +57,9 @@ export default {
   },
   onLoad(query) {
     console.log('startapp', query.tgWebAppStartParam)
-    this.webApp = window.window.Telegram.WebApp 
+    this.webApp = window.Telegram.WebApp 
     console.log('initData', this.webApp.initData)
     if (this.webApp.initDataUnsafe) {
-      // this.verifyInitData(this.webApp.initData)
       this.userData = this.webApp.initDataUnsafe.user
     }
   },
@@ -72,13 +68,13 @@ export default {
   },
   methods: {
     async handleShare() {
-      // const content = "Join the fun at Telegram and win big prizes! Go play and receive exclusive bonuses. Don't miss out!"
-      // const shareLink = 'https://t.me/KingV5Bot/TrueGame1?startapp=Telegram0000001195'
-      // const tgShareUrl = 'https://t.me/share/url?url={link}&text={text}'
-      // const url = tgShareUrl.replace('{text}', content).replace('{link}', shareLink)
-      const url = "https://t.me/share/url?url=https://t.me/KingDemoBot/AceTest?startapp=TONACE0000591513&text=Join the fun at TONACE and win big prizes! Go play and receive exclusive bonuses. Don't miss out!"
+      const content = "Join the fun at Telegram and win big prizes! Go play and receive exclusive bonuses. Don't miss out!"
+      const shareLink = 'https://t.me/KingV5Bot/TrueGame1?startapp=Telegram0000001195'
+      const tgShareUrl = 'https://t.me/share/url?url={link}&text={text}'
+      const url = tgShareUrl.replace('{text}', content).replace('{link}', shareLink)
       window.open(url, "_blank")
     },
+
     async initWallet() {
       this.tonConnectUI = new TonConnectUI({
         manifestUrl: 'https://ton-connect.github.io/demo-dapp-with-react-ui/tonconnect-manifest.json',
@@ -92,12 +88,6 @@ export default {
       })
     },
 
-    async verifyInitData(initData) {
-      initData = 'query_id=AAHPRgVfAAAAAM9GBV_8fgzc&user=%7B%22id%22%3A1594181327%2C%22first_name%22%3A%22Messi%22%2C%22last_name%22%3A%22King%22%2C%22language_code%22%3A%22zh-hans%22%2C%22allows_write_to_pm%22%3Atrue%7D&auth_date=1721223083&hash=3fa2767433f28bda4d069b45ebccad40c62067dfe87566e40f16b0df0dbe82ac'
-      const result = decodeURIComponent(initData)
-      console.log({result})
-    },
-
     async connect() {
       const connectedWallet = await this.tonConnectUI.connectWallet();
       console.log('connect', connectedWallet)
@@ -107,12 +97,56 @@ export default {
       await this.tonConnectUI.disconnect()
     },
 
-    async payByWallet() {
+    async getJettonWallet(addr, jettonAddr) {
+      const tonweb = new TonWeb(new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC'))
+      const jettonMinter = new TonWeb.token.jetton.JettonMinter(tonweb.provider, { address: jettonAddr });
+      console.log(new TonWeb.utils.Address(addr).toString(true, true, true))
+      const fromJettonWalletAddr = await jettonMinter.getJettonWalletAddress(new TonWeb.utils.Address(addr));
+      return fromJettonWalletAddr.toString(true, true, true)
+    },
+
+    async payByJetton() {
+      const fromAddr = this.currentWallet.account.address
+      const fromJettonAddr = this.getJettonWallet(fromAddr, this.usdtAddr)
+      console.log({fromAddr, fromJettonAddr})
+      console.log(address(fromAddr).toString(true, true, true))
+      const jettonAmount = 0.01 * Math.pow(10, this.usdtDecimal) // 0.01 USDT
+      const jettonFeeAmount = 0.01 * Math.pow(10, 9)
+      const body = beginCell()
+        .storeUint(0xf8a7ea5, 32)                 // jetton 转账操作码
+        .storeUint(0, 64)                         // query_id:uint64
+        .storeCoins(jettonAmount)                 // amount:转账的 Jetton 金额（小数位 = 6 - jUSDT, 9 - 默认）
+        .storeAddress(address(this.dstAddr))      // destination:MsgAddress
+        .storeAddress(address(fromAddr))          // response_destination:MsgAddress
+        .storeUint(0, 1)                          // custom_payload:(Maybe ^Cell)
+        .storeCoins(jettonFeeAmount)                 // forward_ton_amount:(VarUInteger 16)
+        .storeUint(0, 1)                          // forward_payload:(Either Cell ^Cell)
+        .endCell();
       const transaction = {
         validUntil: Math.floor(Date.now() / 1000) + 360,
         messages: [{
-          address: this.tonWallet,
-          amount: 10000000,
+          address: fromJettonAddr, // 发送方 Jetton 钱包
+          amount: 0.05 * Math.pow(10, 9), // 用于手续费，超额部分将被退回
+          payload: body.toBoc().toString("base64") // 带有 Jetton 转账 body
+        }]
+      }
+      console.log(transaction)
+      const result = await this.tonConnectUI.sendTransaction(transaction)
+      console.log('payByUsdt', {result})
+    },
+
+    async payByTon() {
+      const comment = Date.now() + ''
+      const body = beginCell()
+        .storeUint(0, 32) // 写入32个零位以表示后面将跟随文本评论
+        .storeStringTail(comment) // 写下我们的文本评论
+        .endCell();
+      const transaction = {
+        validUntil: Math.floor(Date.now() / 1000) + 360,
+        messages: [{
+          address: this.dstAddr,
+          amount: 0.01 * Math.pow(10, 9), // 0.01
+          payload: body.toBoc().toString("base64") // body中带有评论
         }]
       }
       const result = await this.tonConnectUI.sendTransaction(transaction)
@@ -134,9 +168,6 @@ export default {
       console.log('InvoiceLink', resp.data.result)
       // 打开订单链接
       this.webApp.openInvoice(resp.data.result)
-    },
-
-    tonAddress (publicKey) {
     },
 
     hideStr(str) {
