@@ -33,7 +33,7 @@
       <view class="btn btn-primary" @click="payByJetton" v-if="currentWallet">PayByUsdt</view>
       <view class="btn btn-primary" @click="payByTon" v-if="currentWallet">PayByTon</view>
       <view class="btn btn-primary" @click="connect" v-else>Connect</view>
-      <view class="btn btn-secondary" @click="handleShare">Share</view>
+      <view class="btn btn-secondary" @click="payByStar">PayByStar</view>
     </view>
   </view>
 </template>
@@ -84,7 +84,6 @@ export default {
     async initWallet() {
       this.tonConnectUI = new TonConnectUI({
         manifestUrl: 'https://ton-connect.github.io/demo-dapp-with-react-ui/tonconnect-manifest.json',
-        // manifestUrl: 'https://tma.charsoft.tech/static/tonconnect-manifest.json',
       });
       this.currentWallet = this.tonConnectUI.wallet;
       console.log('wallet', this.currentWallet)
@@ -107,32 +106,16 @@ export default {
     async getJettonWallet(addr, jettonAddr) {
       const tonweb = new TonWeb(new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC'))
       const jettonMinter = new TonWeb.token.jetton.JettonMinter(tonweb.provider, { address: jettonAddr });
-      // console.log(new TonWeb.utils.Address(addr).toString(true, true, true))
       const fromJettonWalletAddr = await jettonMinter.getJettonWalletAddress(new TonWeb.utils.Address(addr));
       const fromJettonWallet = new TonWeb.token.jetton.JettonWallet(tonweb.provider, { address: fromJettonWalletAddr });
       return fromJettonWallet
-      // return fromJettonWalletAddr.toString(true, true, true)
     },
 
     async payByJetton() {
       const fromAddr = this.currentWallet.account.address
       const fromJettonWallet = await this.getJettonWallet(fromAddr, this.usdtAddr)
       const fromJettonAddr = (await fromJettonWallet.getAddress()).toString()
-      console.log({fromJettonAddr})
-      // console.log({fromAddr, fromJettonAddr})
-      // console.log(address(fromAddr).toString())
       const jettonAmount = 0.01 * Math.pow(10, this.usdtDecimal) // 0.01 USDT
-      // const jettonFeeAmount = 0.01 * Math.pow(10, 9)
-      // const body = beginCell()
-      //   .storeUint(0xf8a7ea5, 32)                 // jetton 转账操作码
-      //   .storeUint(0, 64)                         // query_id:uint64
-      //   .storeCoins(jettonAmount)                 // amount:转账的 Jetton 金额（小数位 = 6 - jUSDT, 9 - 默认）
-      //   .storeAddress(address(this.dstAddr))      // destination:MsgAddress
-      //   .storeAddress(address(fromAddr))          // response_destination:MsgAddress
-      //   .storeUint(0, 1)                          // custom_payload:(Maybe ^Cell)
-      //   .storeCoins(jettonFeeAmount)              // forward_ton_amount:(VarUInteger 16)
-      //   .storeUint(0, 1)                          // forward_payload:(Either Cell ^Cell)
-      //   .endCell();
       const comment = new Uint8Array([... new Uint8Array(4), ... new TextEncoder().encode('HELLO')]);
       const payload = await fromJettonWallet.createTransferBody({
         jettonAmount: jettonAmount, // Jetton数量（以最基本的不可分割单位计）
@@ -142,11 +125,7 @@ export default {
         responseAddress: new TonWeb.utils.Address(fromAddr) // 扣除手续费后将TON退回给发件人的钱包地址
       })
       const payloadBase64 = Buffer.from(await payload.toBoc()).toString('base64')
-      // console.log({payload})
-      // console.log(jettonAmount, this.dstAddr, fromAddr, jettonFeeAmount)
-      console.log('payload', payloadBase64)
-      // console.log('body', body.toBoc().toString('base64'))
-      // return
+      console.log(payloadBase64)
       const transaction = {
         validUntil: Math.floor(Date.now() / 1000) + 360,
         messages: [{
@@ -155,7 +134,7 @@ export default {
           payload: payloadBase64 // 带有 Jetton 转账 body
         }]
       }
-      console.log(transaction)
+      console.log({transaction})
       const result = await this.tonConnectUI.sendTransaction(transaction)
       console.log('payByUsdt', {result})
     },
