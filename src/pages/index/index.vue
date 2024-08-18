@@ -21,6 +21,10 @@
         <view class="label">address raw</view>
         <view class="value">{{hideStr(currentWallet.account.address)}}</view>
       </div>
+      <div class="form-line" v-if="currentWallet">
+        <view class="label">address</view>
+        <view class="value">{{hideStr(userAddr)}}</view>
+      </div>
       <div class="btn-line">
         <div class="btn btn-primary" @click="disconnect">断开连接</div>
       </div>
@@ -53,6 +57,7 @@ export default {
         last_name: 'WORLD'
       },
       currentWallet: null,
+      userAddr: ''
     }
   },
   onLoad(query) {
@@ -85,6 +90,7 @@ export default {
       const unsubscribe = this.tonConnectUI.onStatusChange(wallet => {
         console.log('change', wallet)
         this.currentWallet = wallet
+        this.userAddr = address(wallet.account.address).toString({urlSafe: true, bounceable: false, testOnly: false})
       })
     },
 
@@ -109,7 +115,7 @@ export default {
       const fromAddr = this.currentWallet.account.address
       const fromJettonAddr = this.getJettonWallet(fromAddr, this.usdtAddr)
       console.log({fromAddr, fromJettonAddr})
-      console.log(address(fromAddr).toString(true, true, true))
+      console.log(address(fromAddr).toString())
       const jettonAmount = 0.01 * Math.pow(10, this.usdtDecimal) // 0.01 USDT
       const jettonFeeAmount = 0.01 * Math.pow(10, 9)
       const body = beginCell()
@@ -169,7 +175,6 @@ export default {
       // 打开订单链接
       this.webApp.openInvoice(resp.data.result)
     },
-
     hideStr(str) {
       return str.slice(0, 6) + '...' + str.slice(-6)
     },
