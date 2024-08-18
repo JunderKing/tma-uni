@@ -107,34 +107,52 @@ export default {
     async getJettonWallet(addr, jettonAddr) {
       const tonweb = new TonWeb(new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC'))
       const jettonMinter = new TonWeb.token.jetton.JettonMinter(tonweb.provider, { address: jettonAddr });
-      console.log(new TonWeb.utils.Address(addr).toString(true, true, true))
+      // console.log(new TonWeb.utils.Address(addr).toString(true, true, true))
       const fromJettonWalletAddr = await jettonMinter.getJettonWalletAddress(new TonWeb.utils.Address(addr));
-      return fromJettonWalletAddr.toString(true, true, true)
+      const fromJettonWallet = new TonWeb.token.jetton.JettonWallet(tonweb.provider, { address: fromJettonWalletAddr });
+      return fromJettonWallet
+      // return fromJettonWalletAddr.toString(true, true, true)
     },
 
     async payByJetton() {
       const fromAddr = this.currentWallet.account.address
-      const fromJettonAddr = this.getJettonWallet(fromAddr, this.usdtAddr)
-      console.log({fromAddr, fromJettonAddr})
-      console.log(address(fromAddr).toString())
+      const fromJettonWallet = await this.getJettonWallet(fromAddr, this.usdtAddr)
+      const fromJettonAddr = (await fromJettonWallet.getAddress()).toString()
+      console.log({fromJettonAddr})
+      // console.log({fromAddr, fromJettonAddr})
+      // console.log(address(fromAddr).toString())
       const jettonAmount = 0.01 * Math.pow(10, this.usdtDecimal) // 0.01 USDT
-      const jettonFeeAmount = 0.01 * Math.pow(10, 9)
-      const body = beginCell()
-        .storeUint(0xf8a7ea5, 32)                 // jetton 转账操作码
-        .storeUint(0, 64)                         // query_id:uint64
-        .storeCoins(jettonAmount)                 // amount:转账的 Jetton 金额（小数位 = 6 - jUSDT, 9 - 默认）
-        .storeAddress(address(this.dstAddr))      // destination:MsgAddress
-        .storeAddress(address(fromAddr))          // response_destination:MsgAddress
-        .storeUint(0, 1)                          // custom_payload:(Maybe ^Cell)
-        .storeCoins(jettonFeeAmount)                 // forward_ton_amount:(VarUInteger 16)
-        .storeUint(0, 1)                          // forward_payload:(Either Cell ^Cell)
-        .endCell();
+      // const jettonFeeAmount = 0.01 * Math.pow(10, 9)
+      // const body = beginCell()
+      //   .storeUint(0xf8a7ea5, 32)                 // jetton 转账操作码
+      //   .storeUint(0, 64)                         // query_id:uint64
+      //   .storeCoins(jettonAmount)                 // amount:转账的 Jetton 金额（小数位 = 6 - jUSDT, 9 - 默认）
+      //   .storeAddress(address(this.dstAddr))      // destination:MsgAddress
+      //   .storeAddress(address(fromAddr))          // response_destination:MsgAddress
+      //   .storeUint(0, 1)                          // custom_payload:(Maybe ^Cell)
+      //   .storeCoins(jettonFeeAmount)              // forward_ton_amount:(VarUInteger 16)
+      //   .storeUint(0, 1)                          // forward_payload:(Either Cell ^Cell)
+      //   .endCell();
+      const comment = new Uint8Array([... new Uint8Array(4), ... new TextEncoder().encode('HELLO')]);
+      const payload = await fromJettonWallet.createTransferBody({
+        jettonAmount: jettonAmount, // Jetton数量（以最基本的不可分割单位计）
+        toAddress: new TonWeb.utils.Address(this.dstAddr), // 接收用户的钱包地址（非Jetton钱包）
+        forwardAmount: TonWeb.utils.toNano('0.01'), // 用于触发Transfer notification消息的一些TON数量
+        forwardPayload: comment, // Transfer notification消息的文本评论
+        responseAddress: new TonWeb.utils.Address(fromAddr) // 扣除手续费后将TON退回给发件人的钱包地址
+      })
+      const payloadBase64 = Buffer.from(await payload.toBoc()).toString('base64')
+      // console.log({payload})
+      // console.log(jettonAmount, this.dstAddr, fromAddr, jettonFeeAmount)
+      console.log('payload', payloadBase64)
+      // console.log('body', body.toBoc().toString('base64'))
+      // return
       const transaction = {
         validUntil: Math.floor(Date.now() / 1000) + 360,
         messages: [{
           address: fromJettonAddr, // 发送方 Jetton 钱包
           amount: 0.05 * Math.pow(10, 9), // 用于手续费，超额部分将被退回
-          payload: body.toBoc().toString("base64") // 带有 Jetton 转账 body
+          payload: payloadBase64 // 带有 Jetton 转账 body
         }]
       }
       console.log(transaction)
