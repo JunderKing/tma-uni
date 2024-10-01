@@ -96,7 +96,7 @@ export default {
     joinGroupB1() {
       window.open('https://t.me/+0KzXdE2Pr602ZDE1', '_blank')
     },
-    joinGroupB1() {
+    joinGroupB2() {
       window.open('https://t.me/+0KzXdE2Pr602ZDE1')
     },
     async handleShare() {
