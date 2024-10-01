@@ -1,12 +1,24 @@
 <template>
   <view class="content">
-    <view class="form-region">
+    <!-- <view class="form-region">
       <div class="form-title">USER</div>
       <view class="form-line" v-for="(value, key) in userData" :key="key">
         <view class="label">{{key}}</view>
         <view class="value">{{value}}</view>
       </view>
-    </view>
+    </view> -->
+    <div class="btn-line">
+      <div class="btn btn-primary" @click="joinGroupA1">添加社群A1</div>
+    </div>
+    <div class="btn-line">
+      <div class="btn btn-primary" @click="joinGroupA2">添加社群A2</div>
+    </div>
+    <div class="btn-line">
+      <div class="btn btn-primary" @click="joinGroupB1">添加社群B1</div>
+    </div>
+    <div class="btn-line">
+      <div class="btn btn-primary" @click="joinGroupB2">添加社群B2</div>
+    </div>
     <view class="form-region" v-if="currentWallet">
       <div class="form-title">WALLET</div>
       <div class="form-line">
@@ -29,12 +41,12 @@
         <div class="btn btn-primary" @click="disconnect">断开连接</div>
       </div>
     </view>
-    <view class="btn-region">
+    <!-- <view class="btn-region">
       <view class="btn btn-primary" @click="payByJetton" v-if="currentWallet">PayByUsdt</view>
       <view class="btn btn-primary" @click="payByTon" v-if="currentWallet">PayByTon</view>
       <view class="btn btn-primary" @click="connect" v-else>Connect</view>
       <view class="btn btn-secondary" @click="payByStar">PayByStar</view>
-    </view>
+    </view> -->
   </view>
 </template>
 
@@ -58,7 +70,9 @@ export default {
         last_name: 'WORLD'
       },
       currentWallet: null,
-      userAddr: ''
+      userAddr: '',
+      tmaLink:'https//t.me/UnionEx_official_bot/UnionEx_Airdrop_Point',
+      inviteText:'I’m claiming free UXP airdrop points from UnionEx with just a few clicks on Telegram. Don’t miss out!',
     }
   },
   onLoad(query) {
@@ -73,6 +87,18 @@ export default {
     this.initWallet()
   },
   methods: {
+    joinGroupA1() {
+      window.open('https://t.me/UnionExGlobal', '_blank')
+    },
+    joinGroupA2() {
+      window.open('https://t.me/UnionExGlobal')
+    },
+    joinGroupB1() {
+      window.open('https://t.me/+0KzXdE2Pr602ZDE1', '_blank')
+    },
+    joinGroupB1() {
+      window.open('https://t.me/+0KzXdE2Pr602ZDE1')
+    },
     async handleShare() {
       const content = "Join the fun at Telegram and win big prizes! Go play and receive exclusive bonuses. Don't miss out!"
       const shareLink = 'https://t.me/KingV5Bot/TrueGame1?startapp=Telegram0000001195'
